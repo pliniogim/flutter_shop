@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
+
 import '../providers/products.dart';
-import '../widgets/products_grid.dart';
+
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({Key? key}) : super(key: key);
@@ -26,7 +26,7 @@ class ProductDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(loadedProduct.title),
       ),
-      body: Text(''),
+      body: const Text(''),
     );
   }
 }

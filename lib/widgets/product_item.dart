@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/cart.dart';
 import '../providers/product.dart';
 import '../screens/product_detail_screen.dart';
 
@@ -15,6 +16,8 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     //first way of using provider
     //final product =  Provider.of<Product>(context);
+
+    final cart= Provider.of<Cart>(context, listen:false);
 
     // another way of using provider
     //with the use of consumer
@@ -45,7 +48,9 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              onPressed: null,
+              onPressed: () {
+                cart.addItem(product.id, product.price, product.title);
+              },
             ),
           ),
           child: GestureDetector(
