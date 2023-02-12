@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../providers/products.dart';
 
-
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({Key? key}) : super(key: key);
   static const routeName = '/product-detail';
@@ -12,21 +11,53 @@ class ProductDetailScreen extends StatelessWidget {
   // final String title;
   // final double price;
 
-
-
   @override
   Widget build(BuildContext context) {
-
     final productId = ModalRoute.of(context)?.settings.arguments as String;
     //final loadedProduct = Provider.of<Products>(context).items.firstWhere((prod) => prod.id == productId);
-    final loadedProduct = Provider.of<Products>(context, listen: false).findById(productId);
+    final loadedProduct =
+        Provider.of<Products>(context, listen: false).findById(productId);
 
-
-    debugPrint(productId);
     return Scaffold(
-      appBar: AppBar(title: Text(loadedProduct.title),
+      appBar: AppBar(
+        title: Text(loadedProduct.title),
       ),
-      body: const Text(''),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 300,
+              width: double.infinity,
+              child: Image.network(
+                loadedProduct.imageUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            Text(
+              '\$${loadedProduct.price}',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 20.0,
+              ),
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              width: double.infinity,
+              child: Text(
+                loadedProduct.description,
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
