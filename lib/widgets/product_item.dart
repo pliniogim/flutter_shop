@@ -9,15 +9,14 @@ class ProductItem extends StatelessWidget {
   // final String title;
   // final String imageUrl;
 
-  const ProductItem({Key? key})
-      : super(key: key);
+  const ProductItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     //first way of using provider
     //final product =  Provider.of<Product>(context);
 
-    final cart= Provider.of<Cart>(context, listen:false);
+    final cart = Provider.of<Cart>(context, listen: false);
 
     // another way of using provider
     //with the use of consumer
@@ -29,11 +28,11 @@ class ProductItem extends StatelessWidget {
           //header: Text(title),
           footer: GridTileBar(
             leading: IconButton(
-              icon: Icon(product.isFavorite ?
-                Icons.favorite : Icons.favorite_border,
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              onPressed: (){
+              onPressed: () {
                 product.toggleFavoriteStatus();
               },
             ),
@@ -49,14 +48,28 @@ class ProductItem extends StatelessWidget {
                 color: Theme.of(context).colorScheme.secondary,
               ),
               onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 cart.addItem(product.id, product.price, product.title);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Added item to cart!'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'Undo',
+                      onPressed: () {
+                        cart.removeSingleItem(product.id);
+                      },
+                    ),
+                  ),
+                );
               },
             ),
           ),
           child: GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                arguments: product.id,//arguments: id,
+              Navigator.of(context).pushNamed(
+                ProductDetailScreen.routeName,
+                arguments: product.id, //arguments: id,
               );
             },
             child: Image.network(

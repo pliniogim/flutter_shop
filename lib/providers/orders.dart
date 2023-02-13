@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
 
-import '../widgets/cart_item.dart';
+import './cart.dart';
 
 class OrderItem {
-  late final String id;
-  late final double amount;
-  late final List<CartItem> products;
-  late final DateTime dateTime;
+  final String id;
+  final double amount;
+  final List<CartItem> products;
+  final DateTime dateTime;
 
-  OrderItem(
-      {required String id,
-      required double amount,
-      required DateTime Function() datetime,
-      required List<CartItem> products});
+  OrderItem({
+    required this.id,
+    required this.amount,
+    required this.products,
+    required this.dateTime,
+  });
 }
 
 class Orders with ChangeNotifier {
@@ -22,14 +23,15 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  addOrder(List<CartItem> cartProducts, double total) {
+  void addOrder(List<CartItem> cartProducts, double total) {
     _orders.insert(
       0,
       OrderItem(
-          id: DateTime.now.toString(),
-          amount: total,
-          datetime: DateTime.now,
-          products: cartProducts),
+        id: DateTime.now().toString(),
+        amount: total,
+        dateTime: DateTime.now(),
+        products: cartProducts,
+      ),
     );
     notifyListeners();
   }
