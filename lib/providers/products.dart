@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'product.dart';
 
@@ -39,16 +41,17 @@ class Products with ChangeNotifier {
     ),
   ];
 
-  var _showFavoritesOnly = false;
+  //var _showFavoritesOnly = false;
 
   //getter
   List<Product> get items {
     // if (_showFavoritesOnly) {
     //   return _items.where((prodItem) => prodItem.isFavorite).toList();
     // } else {
-      return [..._items]; //copy of _items
+    return [..._items]; //copy of _items
     // }
   }
+
   List<Product> get favoriteItem {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
@@ -67,8 +70,53 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  void addProduct() {
-    //_items.add(value);
+  Future<void> addProduct(Product product)  {
+    var url = Uri.https(
+        'flutter-shop-82a9a-default-rtdb.firebaseio.com',
+        '/products.json');
+    return http
+        .post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'price': product.price,
+        'imageUrl': product.imageUrl,
+        'isFavorite': product.isFavorite,
+      }),
+    )
+        .then((response) {
+      //debugPrint(json.decode(response.body));
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          //id: DateTime.now().toString(),
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl);
+
+      _items.add(newProduct);
+
+      //_items.insert(0, newProduct); at the beginning
+      notifyListeners();
+    }).catchError((error) {
+      debugPrint(error);
+      throw error;
+    });
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      debugPrint('...');
+    }
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }
