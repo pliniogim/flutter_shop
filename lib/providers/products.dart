@@ -42,11 +42,10 @@ class Products with ChangeNotifier {
     // ),
   ];
 
-
   //var _showFavoritesOnly = false;
 
-  String? authToken;
-  String? userId;
+  final String? authToken;
+  final String? userId;
 
   Products(this.authToken, this.userId, this._items);
 
@@ -77,30 +76,46 @@ class Products with ChangeNotifier {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final params = {'auth': authToken};
-    var url = Uri.https(
-        'flutter-shop-82a9a-default-rtdb.firebaseio.com', '/products.json', params);
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    var params = {'auth': authToken};
+    // if (filterByUser) {
+    //   params = {
+    //     'auth': authToken,
+    //     'orderBy': '"creatorId"',
+    //     'equalTo': '"$userId"',
+    //   };
+    // } else {
+    //   params = {'auth': authToken};
+    // }
+    if (filterByUser) {
+      params["orderBy"] = '"creatorId"';
+      params["equalTo"] = '"$userId"';
+    }
+
+    var url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
+        '/products.json', params);
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
-      if (extractedData?.isEmpty ?? true){
+      if (extractedData == null) {
         return;
       }
-      final params = {'auth': authToken};
+      // final params = {'auth': authToken};
       url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
-          '/products/userFavorites/$userId.json', params);
+          '/userFavorites/$userId.json', params);
       final favoriteResponse = await http.get(url);
+
       final favoriteData = json.decode(favoriteResponse.body);
       final loadedProducts = <Product>[];
-      extractedData!.forEach((prodId, prodData) {
+      extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
-          isFavorite: favoriteData == null ? false: favoriteData[prodId] ?? false,
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -112,8 +127,8 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final params = {'auth': authToken};
-    var url = Uri.https(
-        'flutter-shop-82a9a-default-rtdb.firebaseio.com', '/products.json', params);
+    var url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
+        '/products.json', params);
     try {
       final response = await http.post(
         url,
@@ -122,6 +137,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'price': product.price,
           'imageUrl': product.imageUrl,
+          'creatorId': userId
         }),
       );
       //debugPrint(json.decode(response.body));
@@ -145,8 +161,8 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(String id, Product newProduct) async {
     final params = {'auth': authToken};
-    var url = Uri.https(
-        'flutter-shop-82a9a-default-rtdb.firebaseio.com', '/products/$id.json', params);
+    var url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
+        '/products/$id.json', params);
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       await http.patch(url,
@@ -165,8 +181,8 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final params = {'auth': authToken};
-    var url = Uri.https(
-        'flutter-shop-82a9a-default-rtdb.firebaseio.com', '/products/$id.json', params);
+    var url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
+        '/products/$id.json', params);
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     Product? existingProduct = _items[existingProductIndex];
 

@@ -1,4 +1,5 @@
 # Miscellaneous
+constants.dart
 *.class
 *.log
 *.pyc

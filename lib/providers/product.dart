@@ -31,7 +31,7 @@ class Product with ChangeNotifier {
     notifyListeners();
 
     var url = Uri.https('flutter-shop-82a9a-default-rtdb.firebaseio.com',
-        '/products/userFavorites/$userId/$id.json', params);
+        '/userFavorites/$userId/$id.json', params);
 
     try {
       final response = await http.put(url,

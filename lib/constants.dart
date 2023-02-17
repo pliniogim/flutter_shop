@@ -1,0 +1,1 @@
+const params_k = {'key': 'AIzaSyDqxgQgYbdKZ-B6sXXzEU7Hnbx_gvzUrjY'};

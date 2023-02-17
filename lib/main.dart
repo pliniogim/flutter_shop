@@ -4,6 +4,7 @@ import 'package:flutter_shop/providers/cart.dart';
 import 'package:flutter_shop/providers/orders.dart';
 import 'package:flutter_shop/screens/cart_screen.dart';
 import 'package:flutter_shop/screens/products_overview_screen.dart';
+import 'package:flutter_shop/screens/splash_screen.dart';
 
 //import 'package:flutter_shop/screens/products_overview_screen.dart';
 import 'package:provider/provider.dart';
@@ -32,17 +33,19 @@ class MyApp extends StatelessWidget {
             create: (ctx) => Auth(),
           ),
           ChangeNotifierProxyProvider<Auth, Products>(
-            update: (_, auth, previousProducts) =>
-                Products(auth.token, auth.userId, previousProducts == null ? [] : previousProducts.items),
+            update: (_, auth, previousProducts) => Products(
+                auth.token,
+                auth.userId,
+                previousProducts == null ? [] : previousProducts.items),
             create: (_) => Products(null, null, []),
           ),
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
           ChangeNotifierProxyProvider<Auth, Orders>(
-            update: (_, auth, previousOrders) =>
-                Orders(auth.token, previousOrders == null ? [] : previousOrders.orders),
-            create: (_) => Orders(null, []),
+            update: (_, auth, previousOrders) => Orders(auth.token, auth.userId,
+                previousOrders == null ? [] : previousOrders.orders),
+            create: (_) => Orders(null, null, []),
           ),
           // ChangeNotifierProvider(
           //   create: (ctx) => Orders(),
@@ -60,7 +63,14 @@ class MyApp extends StatelessWidget {
             ),
             home: auth.isAuth
                 ? const ProductsOverviewScreen()
-                : const AuthScreen(),
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SplashScreen()
+                            : const AuthScreen(),
+                  ),
             //home: const ProductsOverviewScreen(),
             routes: {
               ProductDetailScreen.routeName: (ctx) =>
