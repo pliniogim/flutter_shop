@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products_screen.dart';
 import '../providers/auth.dart';
+import '../helpers/custom_route.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -50,6 +51,8 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushReplacementNamed('/');
+              // Navigator.of(context).pushReplacement(CustomRoute(
+              //   builder: (ctx) => const OrdersScreen(), settings: null,),);
               Provider.of<Auth>(context, listen: false).logout();
             },
           ),

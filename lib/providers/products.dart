@@ -154,7 +154,7 @@ class Products with ChangeNotifier {
       //_items.insert(0, newProduct); at the beginning
       notifyListeners();
     } catch (error) {
-      debugPrint(error.toString());
+      //debugPrint(error.toString());
       rethrow;
     }
   }
@@ -175,7 +175,7 @@ class Products with ChangeNotifier {
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
-      debugPrint('...');
+      //debugPrint('...');
     }
   }
 
